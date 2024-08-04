@@ -9,18 +9,15 @@
 <body class="bg-gray-100">
     @auth('customer')
         @include('components.nav-customer')
-    @endauth
-
-    @auth('worker')
+    @elseif(auth()->guard('worker')->check())
         @include('components.nav-worker')
-    @endauth
-
-    @auth('admin')
+    @elseif(auth()->guard('admin')->check())
         @include('components.nav-admin')
-    @endauth
+    @endif
 
     <div class="container mx-auto px-4 py-12">
         @yield('content')
     </div>
+    
 </body>
 </html>

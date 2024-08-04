@@ -34,4 +34,6 @@ class WorkerController extends Controller
         // Redirect to the customer's chat page
         return redirect()->route('customer.chats.show', $chat->id);
     }
+
+    
 }

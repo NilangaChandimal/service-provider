@@ -6,6 +6,7 @@ use App\Models\Chat;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
 {
@@ -37,10 +38,12 @@ class ChatController extends Controller
         return view('chats.show', compact('chat', 'messages', 'userType', 'chats'));
     }
 
-    public function storeMessage(Request $request, $id) {
+    public function storeMessage(Request $request, $id)
+{
     $request->validate([
-        'message' => 'required|string',
-        'file' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,zip|max:20480', // Adjust mime types and size as needed
+        'message' => 'nullable|string',
+        'file' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,zip|max:20480',
+        'audio' => 'nullable|string',
     ]);
 
     $chat = Chat::findOrFail($id);
@@ -50,16 +53,28 @@ class ChatController extends Controller
     $message->chat_id = $chat->id;
     $message->sender_id = $user->id;
     $message->sender_type = get_class($user); // Store the sender type (Customer, Worker, etc.)
-    $message->message = $request->message;
 
+    // Handle text message
+    if ($request->filled('message')) {
+        $message->message = $request->message;
+    }
+
+    // Handle file upload
     if ($request->hasFile('file')) {
         $file = $request->file('file');
         $filePath = $file->store('messages', 'public'); // Store file in public disk
-        $message->image = $filePath;
+        $message->file_path = $filePath;
     }
 
-    if ($request->filled('message')) {
-        $message->message = $request->message;
+    // Handle audio
+    if ($request->filled('audio')) {
+        $audioData = $request->audio;
+        if (preg_match('/data:audio\/[a-zA-Z]*;base64,(.*)/', $audioData, $matches)) {
+            $audioContent = base64_decode($matches[1]);
+            $audioPath = 'audios/' . uniqid() . '.mp3';
+            Storage::disk('public')->put($audioPath, $audioContent);
+            $message->audio = $audioPath;
+        }
     }
 
     $message->save();
@@ -69,7 +84,5 @@ class ChatController extends Controller
 
     return redirect()->route($request->userType . '.chats.show', $chat->id);
 }
-
-
 
 }
