@@ -87,5 +87,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             return view('admin.profile');
         })->name('profile');
         Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+        
     });
+    Route::get('customers', [AdminController::class, 'showCustomers'])->name('customers');
+    Route::get('workers', [AdminController::class, 'showWorkers'])->name('workers');
+
+
 });
