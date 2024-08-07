@@ -92,6 +92,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
     Route::get('customers', [AdminController::class, 'showCustomers'])->name('customers');
     Route::get('workers', [AdminController::class, 'showWorkers'])->name('workers');
+    Route::get('summary', [AdminController::class, 'summary'])->name('summary');
+    Route::delete('customers/{id}', [AdminController::class, 'deleteCustomer'])->name('customers.delete');
+        Route::delete('workers/{id}', [AdminController::class, 'deleteWorker'])->name('workers.delete');
+
 
 
 });
