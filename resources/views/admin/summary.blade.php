@@ -72,6 +72,16 @@
                             <div class="flex-1">
                                 <p>{{ $customer->name }} - {{ $customer->contact }} - {{ $customer->city }}</p>
                             </div>
+
+                          <!-- Block/Unblock Button -->
+                          <form action="{{ route('admin.customers.block_unblock', $customer->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="relative inline-flex items-center h-10 rounded-full w-24 {{ $customer->blocked ? 'bg-red-500' : 'bg-green-500' }}">
+                                    <span class="absolute left-1 top-1 bg-white w-8 h-8 rounded-full transition-transform duration-200 transform {{ $customer->blocked ? 'translate-x-14' : 'translate-x-0' }}"></span>
+                                    <span class="absolute left-2 text-white text-sm font-medium ">{{ $customer->blocked ? 'Unblock' : '  -----Block' }}</span>
+                                </button>
+                            </form>
+
                             <form action="{{ route('admin.customers.delete', $customer->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
@@ -98,6 +108,16 @@
                             <div class="flex-1">
                                 <p>{{ $worker->name }} - {{ $worker->email }} - {{ $worker->cnumber }} - {{ $worker->job }} - {{ $worker->city }}</p>
                             </div>
+
+                            <!-- Block/Unblock Button -->
+                            <form action="{{ route('admin.workers.block_unblock', $worker->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="relative inline-flex items-center h-10 rounded-full w-24 {{ $worker->blocked ? 'bg-red-500' : 'bg-green-500' }}">
+                                    <span class="absolute left-1 top-1 bg-white w-8 h-8 rounded-full transition-transform duration-200 transform {{ $worker->blocked ? 'translate-x-14' : 'translate-x-0' }}"></span>
+                                    <span class="absolute left-2 text-white text-sm font-medium">{{ $worker->blocked ? 'Unblock' : '  -----Block' }}</span>
+                                </button>
+                            </form>
+                            
                             <form action="{{ route('admin.workers.delete', $worker->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')

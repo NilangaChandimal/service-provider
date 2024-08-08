@@ -16,17 +16,31 @@ class CustomerAuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::guard('customer')->attempt($credentials)) {
-            return redirect()->intended(route('customer.home'));
+    // Attempt to authenticate the user
+    if (Auth::guard('customer')->attempt($credentials)) {
+        // Retrieve the authenticated user
+        $user = Auth::guard('customer')->user();
+
+        // Check if the user is blocked
+        if ($user->blocked == 1) {
+            // Log out and redirect with an error if blocked
+            Auth::guard('customer')->logout();
+            return redirect()->back()->with('blocked', 'Your account has been Tempory blocked contact the hotline!!');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        // If not blocked, proceed to intended route
+        return redirect()->intended(route('customer.home'));
     }
+
+    // If authentication fails, redirect back with error
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ]);
+}
+
 
     public function showRegistrationForm()
     {

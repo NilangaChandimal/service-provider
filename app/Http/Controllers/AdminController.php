@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\Worker;
+use App\Models\Chat;
 
 class AdminController extends Controller
 {
@@ -55,8 +56,10 @@ class AdminController extends Controller
         $uniqueJobs = Worker::select('job')->distinct()->pluck('job');
         $uniqueCities = Worker::select('city')->distinct()->pluck('city');
         $uniqueCusCities = Customer::select('city')->distinct()->pluck('city');
+        $blockedCustomers = Customer::where('blocked', true)->count();
+        $blockedWorkers = Worker::where('blocked', true)->count();
 
-        return view('admin.summary', compact('customerCount', 'workerCount', 'latestCustomers', 'latestWorkers', 'uniqueJobs', 'uniqueCities', 'uniqueCusCities'));
+        return view('admin.summary', compact('customerCount', 'workerCount', 'latestCustomers', 'latestWorkers', 'uniqueJobs', 'uniqueCities', 'uniqueCusCities', 'blockedCustomers', 'blockedWorkers'));
     }
 
 public function deleteCustomer($id)
@@ -72,4 +75,30 @@ public function deleteWorker($id)
     $worker->delete();
     return redirect()->route('admin.summary')->with('success', 'Worker deleted successfully.');
 }
+
+public function show($id)
+{
+    $chat = Chat::with(['worker', 'customer', 'messages.sender'])->findOrFail($id);
+
+    return view('admin.chats.show', compact('chat'));
+}
+
+public function blockUnblockCustomer($id)
+{
+    $customer = Customer::find($id);
+    $customer->blocked = !$customer->blocked; // Toggle the blocked status
+    $customer->save();
+
+    return redirect()->back()->with('success', 'Customer status updated successfully.');
+}
+
+public function blockUnblockWorker($id)
+{
+    $worker = Worker::find($id);
+    $worker->blocked = !$worker->blocked; // Toggle the blocked status
+    $worker->save();
+
+    return redirect()->back()->with('success', 'Worker status updated successfully.');
+}
+
 }

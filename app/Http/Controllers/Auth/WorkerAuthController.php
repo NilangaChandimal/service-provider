@@ -16,17 +16,31 @@ class WorkerAuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::guard('worker')->attempt($credentials)) {
-            return redirect()->intended(route('worker.home'));
+    // Attempt to authenticate the worker
+    if (Auth::guard('worker')->attempt($credentials)) {
+        // Retrieve the authenticated worker
+        $worker = Auth::guard('worker')->user();
+
+        // Check if the worker is blocked
+        if ($worker->blocked == 1) {
+            // Log out and redirect with an error if blocked
+            Auth::guard('worker')->logout();
+            return redirect()->back()->with('blocked', 'Your account has been Tempory blocked contact the hotline!!');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        // If not blocked, proceed to intended route
+        return redirect()->intended(route('worker.home'));
     }
+
+    // If authentication fails, redirect back with error
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ]);
+}
+
 
     public function showRegistrationForm()
     {

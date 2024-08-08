@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\WorkerAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,9 +94,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('customers', [AdminController::class, 'showCustomers'])->name('customers');
     Route::get('workers', [AdminController::class, 'showWorkers'])->name('workers');
     Route::get('summary', [AdminController::class, 'summary'])->name('summary');
+    
     Route::delete('customers/{id}', [AdminController::class, 'deleteCustomer'])->name('customers.delete');
-        Route::delete('workers/{id}', [AdminController::class, 'deleteWorker'])->name('workers.delete');
+    Route::delete('workers/{id}', [AdminController::class, 'deleteWorker'])->name('workers.delete');
 
+    Route::get('chats', [AdminChatController::class, 'index'])->name('chats.index');
+    Route::get('chats/{id}', [AdminChatController::class, 'show'])->name('chats.show');
 
+    Route::post('customers/block-unblock/{id}', [AdminController::class, 'blockUnblockCustomer'])->name('customers.block_unblock');
+Route::post('workers/block-unblock/{id}', [AdminController::class, 'blockUnblockWorker'])->name('workers.block_unblock');
 
 });

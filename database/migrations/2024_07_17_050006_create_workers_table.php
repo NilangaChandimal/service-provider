@@ -25,6 +25,7 @@ return new class extends Migration
         $table->string('cnumber');
         $table->string('city');
         $table->string('description');
+        $table->boolean('blocked')->default(false);
         $table->timestamp('email_verified_at')->nullable();
         $table->string('password');
         $table->rememberToken();
